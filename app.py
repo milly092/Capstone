@@ -24,8 +24,8 @@ tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the model
-model = BengaliBERTModel(num_labels=15)
-model.load_state_dict(torch.load("model_state_dict.pth", map_location=device))
+model_path = "model.pkl"  # Update this to your model's path
+model = torch.load(model_path, map_location=device)
 model.to(device)
 model.eval()
 
