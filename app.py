@@ -1,7 +1,8 @@
 import streamlit as st
 import torch
-from transformers import BertTokenizer, BertModel
+from transformers import BertTokenizer
 from torch import nn
+import pickle
 
 # Define the BengaliBERTModel class for loading
 class BengaliBERTModel(nn.Module):
@@ -22,11 +23,18 @@ class BengaliBERTModel(nn.Module):
 tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# Load the saved model with architecture
-model_path = "model.pkl"  # Update this to your model's path
-model = torch.load(model_path, map_location=device)
+# Load the model
+model = BengaliBERTModel(num_labels=15)
+model.load_state_dict(torch.load("model_state_dict.pth", map_location=device))
 model.to(device)
 model.eval()
+
+# Load the class mapping
+with open('class_mapping.pkl', 'rb') as f:
+    class_mapping = pickle.load(f)
+
+# Invert the mapping for easy lookup
+index_to_class = {v: k for k, v in class_mapping.items()}
 
 # Streamlit app code
 st.title("Bengali Sentiment Analysis")
@@ -49,8 +57,9 @@ if st.button("Predict"):
 
         with torch.no_grad():
             logits = model(input_ids=input_ids, attention_mask=attention_mask)
-            predicted_class = torch.argmax(logits, dim=1).item()
+            predicted_class_idx = torch.argmax(logits, dim=1).item()
 
-        st.write(f"Predicted Class: {predicted_class}")
+        predicted_class_name = index_to_class.get(predicted_class_idx, "Unknown Class")
+        st.write(f"Predicted Class: {predicted_class_name}")
     else:
         st.write("Please enter some text to predict.")
