@@ -25,7 +25,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the model
 model_path = "model.pkl"  # Update this to your model's path
-model = torch.load(model_path, map_location=device)
+model = torch.load(model_path, map_location=device, weights_only=True)
 model.to(device)
 model.eval()
 
