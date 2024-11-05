@@ -30,8 +30,8 @@ model.to(device)
 model.eval()
 
 # Load the class mapping
-with open('class_mapping.pkl', 'rb') as f:
-    class_mapping = pickle.load(f)
+# with open('class_mapping.pkl', 'rb') as f:
+#     class_mapping = pickle.load(f)
 
 # Invert the mapping for easy lookup
 index_to_class = {v: k for k, v in class_mapping.items()}
@@ -59,7 +59,7 @@ if st.button("Predict"):
             logits = model(input_ids=input_ids, attention_mask=attention_mask)
             predicted_class_idx = torch.argmax(logits, dim=1).item()
 
-        predicted_class_name = index_to_class.get(predicted_class_idx, "Unknown Class")
-        st.write(f"Predicted Class: {predicted_class_name}")
+        # predicted_class_name = index_to_class.get(predicted_class_idx, "Unknown Class")
+        st.write(f"Predicted Class: {predicted_class_idx}")
     else:
         st.write("Please enter some text to predict.")
